@@ -40,7 +40,8 @@ export default class MoviesMenu extends React.Component {
             for(let i = (retrieveLength - 10); i < retrieveLength; i++){
                 if(json[i]) dataSource.push(json[i]);
             }
-            this.setState({totalPagination, pageClicked, dataSource});
+            this.setState({dataSource: []}, 
+                () => this.setState({totalPagination, pageClicked, dataSource}));
         } catch (e) {
             //handle the error
             console.log(e);
@@ -48,18 +49,34 @@ export default class MoviesMenu extends React.Component {
     }
 
     renderMoviesList(){
-        return this.state.dataSource.map((item) => (
+        return this.state.dataSource.map((item) => {
+            const splitDate = (item.release_date).split('-');
+            const year = splitDate[0];
+            return (
                 <div className="movie-card-box">
-                    {item.title}
+                    <div>
+                        <img className="image-card-box shadow-bottom" src={item.poster_path} />
+                        <div className="image-card-section-bottom">
+                            <span className="image-card-section-bottom-title">{item.title}</span>
+                            <span className="image-card-section-bottom-year">{year}</span>
+                        </div>
+                    </div>
                 </div>
-        ));
+            )
+        });
     }
 
     renderPagination(){
         let paginationView = [];
         for(let i = 1; i <= this.state.totalPagination; i++){
             paginationView.push(
-                <div onClick={() => this.retrieveMovies(i)} className="pagination-box" key={i}>{i}</div>
+                <a
+                    style={{cursor: "pointer"}}
+                    onClick={() => this.retrieveMovies(i)} 
+                    className={i === this.state.pageClicked ? "pagination-box selected" : "pagination-box"} 
+                    key={i}>
+                        {i}
+                </a>
             );
         }
         return paginationView;
@@ -67,7 +84,7 @@ export default class MoviesMenu extends React.Component {
 
     render(){
         return(
-            <div>
+            <div className="container-main">
                 <div className="container-movies-title">
                     <span className="movies-title">
                         {MOVIES_TITLE}
@@ -77,7 +94,9 @@ export default class MoviesMenu extends React.Component {
                     <div className="container-movies-list">
                         { this.renderMoviesList() }
                     </div>
-                    { this.renderPagination() }
+                <div className="container-pagination">
+                    <span>PAGE</span> { this.renderPagination() }
+                </div>
                 </div>
             </div>
         );

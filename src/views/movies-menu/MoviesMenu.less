@@ -1,8 +1,18 @@
 @import "../../styles.less";
 
 .container-main{
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 100px;
+    padding-right: 100px;
+
+    @media @medium {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    @media @mobile {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
 }
 
 .container-movies-main{
@@ -14,13 +24,14 @@
 }
 
 .container-movies-list{
-    display: flex;
-    flex-direction: row;
+    display: block;
+    text-align: center;
 }
 
 .container-movies-title {
     margin-top: 50px;
     margin-bottom: 49px;
+    margin-left: 20px;
 }
 
 .movies-title{
@@ -31,10 +42,70 @@
 }
 
 .movie-card-box{
+    height: 356px;
+    width: 201px;
+    background-color: transparent;
+    margin-left: 18.5px;
+    margin-right: 18.5px;
+    margin-bottom: 59px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.shadow-bottom {
+    box-shadow: 0px 15px 40px -10px #303030;    
+}
+
+.image-card-box{
     height: 301px;
     width: 201px;
-    background-color: white;
-    margin-left: 10px;
-    margin-right: 10px;
-    display: inline-block;
+    object-fit: cover;
+}
+
+.image-card-section-bottom{
+    height: 55px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    padding-top: 10px;
+    text-align: left;
+    &-title{
+        font-size: 17px;
+        font-family: 'roboto-medium';
+        color: #000000;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    &-year{
+        font-size: 13px;
+        font-family: 'roboto-bold';
+        color: #ACB6C6;
+    }
+}
+
+.container-pagination{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+    width: 100%;
+    padding-right: 100px;
+    span{
+        font-family: 'roboto-bold';
+        color: #ACB6C6;
+        font-size: 23px;
+    }
+}
+
+.pagination-box{
+    padding: 5px;
+    font-size: 23px;
+    color: #ACB6C6;
+}
+
+.selected {
+    color: black;
 }
