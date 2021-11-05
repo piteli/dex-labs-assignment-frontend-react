@@ -21,6 +21,7 @@ export default class MoviesMenu extends React.Component {
     }
 
     async retrieveMovies(pageClicked = 1){
+        this.setState({pageClicked});
         if(pageClicked === this.state.pageClicked) return;
         try {
             const response = await fetch(

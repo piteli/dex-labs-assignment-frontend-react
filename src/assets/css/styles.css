@@ -2,6 +2,10 @@
   font-family: 'roboto-bold';
   src: url("@assets/fonts/Roboto-Bold.ttf") format('truetype');
 }
+@font-face {
+  font-family: 'roboto-medium';
+  src: url("@assets/fonts/Roboto-Medium.ttf") format('truetype');
+}
 body {
   margin: 0;
   background-color: #E1E7F1;
