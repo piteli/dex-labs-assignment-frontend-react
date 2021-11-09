@@ -1,12 +1,8 @@
-import MoviesMenu from './views/movies-menu/MoviesMenu';
+import MoviesMenu from '@views/movies-menu/MoviesMenu';
 import '@css/styles.css';
 
 function App() {
-  return (
-    <div>
-      <MoviesMenu />
-    </div>
-  );
+  return <MoviesMenu />;
 }
 
 export default App;

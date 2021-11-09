@@ -1,65 +1,62 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import '@css/views/movies-menu/MoviesMenu.css';
-import { MOVIES_API, MOVIES_TITLE } from '@utils/constants/api.contants';
+import { 
+    MOVIES_API, 
+    MOVIES_TITLE, 
+    AUTHENTICATION_TYPE 
+} from '@utils/constants/api.contants';
+import ApiService from '@services/api.service';
 
-export default class MoviesMenu extends React.Component {
-    constructor(){
-        super();
-        this.loadStates();
-    }
+function MoviesMenu() {
+    
+    const [state, setState] = useState({
+        dataSource: [],
+        totalPagination: 0,
+        pageClicked: 0
+    });
 
-    loadStates(){
-        this.state = {
-            dataSource: [] ,
-            totalPagination: 0,
-            pageClicked: 0
-        };
-    }
+    useEffect(() => retrieveMovies(), []);
 
-    componentDidMount(){
-        this.retrieveMovies();
-    }
-
-    async retrieveMovies(pageClicked = 1){
-        this.setState({pageClicked});
-        if(pageClicked === this.state.pageClicked) return;
-        try {
-            const response = await fetch(
-                MOVIES_API,
-                {
-                    headers : {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
+    function retrieveMovies(pageClicked = 1) {
+        if(pageClicked === state.pageClicked) return;
+        setState({...state, pageClicked});
+        new ApiService().get(MOVIES_API, AUTHENTICATION_TYPE.NULL, null)
+            .then((res) => res.json()).then((responseJSON) => {
+                const json = responseJSON;
+                const totalPagination = json.length % 10 === 0 
+                    ? json.length / 10 : parseInt(json.length) + 1;
+                const retrieveLength = (pageClicked * 10);
+                const dataSource = [];
+                for(let i = (retrieveLength - 10); i < retrieveLength; i++) {
+                    if(json[i]) dataSource.push(json[i]);
                 }
-            );
-            const json = await response.json();
-            const totalPagination = json.length % 10 === 0 
-                ? json.length / 10 : parseInt(json.length) + 1;
-            const retrieveLength = (pageClicked * 10);
-            const dataSource = [];
-            for(let i = (retrieveLength - 10); i < retrieveLength; i++){
-                if(json[i]) dataSource.push(json[i]);
-            }
-            this.setState({dataSource: []}, 
-                () => this.setState({totalPagination, pageClicked, dataSource}));
-        } catch (e) {
-            //handle the error
-            console.log(e);
-        }
+                setState({...state, dataSource: []});
+                setState({totalPagination, pageClicked, dataSource});
+            }).catch((error) => {
+                retryReload(retrieveMovies);
+            });
     }
 
-    renderMoviesList(){
-        return this.state.dataSource.map((item) => {
+    function retryReload(retryTheFunction) {
+        setTimeout(() => retryTheFunction(), 5000);
+    }
+
+    function renderMoviesList() {
+        return state.dataSource.map((item, index) => {
             const splitDate = (item.release_date).split('-');
             const year = splitDate[0];
             return (
-                <div className="movie-card-box">
+                <div className="movie-card-box" key={index}>
                     <div>
-                        <img className="image-card-box shadow-bottom" src={item.poster_path} />
+                        <img className="image-card-box shadow-bottom" 
+                            src={item.poster_path} alt={item.title} />
                         <div className="image-card-section-bottom">
-                            <span className="image-card-section-bottom-title">{item.title}</span>
-                            <span className="image-card-section-bottom-year">{year}</span>
+                            <span className="image-card-section-bottom-title">
+                                {item.title}
+                            </span>
+                            <span className="image-card-section-bottom-year">
+                                {year}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -67,39 +64,39 @@ export default class MoviesMenu extends React.Component {
         });
     }
 
-    renderPagination(){
+    function renderPagination(){
         let paginationView = [];
-        for(let i = 1; i <= this.state.totalPagination; i++){
+        for(let i = 1; i <= state.totalPagination; i++){
             paginationView.push(
-                <a
-                    style={{cursor: "pointer"}}
-                    onClick={() => this.retrieveMovies(i)} 
-                    className={i === this.state.pageClicked ? "pagination-box selected" : "pagination-box"} 
+                <button
+                    onClick={() => retrieveMovies(i)} 
+                    className={i === state.pageClicked ? 
+                        "pagination-box selected" : "pagination-box"} 
                     key={i}>
                         {i}
-                </a>
+                </button>
             );
         }
         return paginationView;
     }
 
-    render(){
-        return(
-            <div className="container-main">
-                <div className="container-movies-title">
-                    <span className="movies-title">
-                        {MOVIES_TITLE}
-                    </span>
-                </div>
-                <div className="container-movies-main">
-                    <div className="container-movies-list">
-                        { this.renderMoviesList() }
-                    </div>
-                <div className="container-pagination">
-                    <span>PAGE</span> { this.renderPagination() }
-                </div>
-                </div>
+    return(
+        <div className="container-main">
+            <div className="container-movies-title">
+                <span className="movies-title">
+                    {MOVIES_TITLE}
+                </span>
             </div>
-        );
-    }
+            <div className="container-movies-main">
+                <div className="container-movies-list">
+                    { renderMoviesList() }
+                </div>
+            <div className="container-pagination">
+                <span>PAGE</span> { renderPagination() }
+            </div>
+            </div>
+        </div>
+    );
 }
+
+export default MoviesMenu;
